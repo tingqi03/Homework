@@ -17,48 +17,59 @@ Ackermann Function
 ## 程式實作
 ```cpp
 #include <iostream>
+#include <string>
 using namespace std;
-
-int ackermann(int m, int n) {
-    if (m == 0)
-        return n + 1;
-    else if (n == 0)
-        return ackermann(m - 1, 1);
-    return ackermann(m - 1, ackermann(m, n - 1));
+void printSubsets(const vector<string>& set, vector<string>& currentSet, int index) {
+    
+    if (index == set.size()) {
+        // Print the current subset
+        cout << "{ ";
+        for (const auto& element : currentSet) {
+            cout << element << " ";
+        }
+        cout << "}" << endl;
+        return;
+    }
+    currentSet.push_back(set[index]);
+    printSubsets(set, currentSet, index + 1);
+    currentSet.pop_back();
+    printSubsets(set, currentSet, index + 1);
 }
-
+void computePowerset(const vector<string>& set) {
+    vector<string> currentSet; // Temporary vector to store current subset
+    printSubsets(set, currentSet, 0);
+}
 int main() {
-    int result = ackermann(3, 2);
-    cout << result << '\n';
+    vector<string> set = {"a", "b", "c"};  // Set S = {a, b, c}
+    
+    cout << "Powerset of {a, b, c} is:" << endl;
+    computePowerset(set);  
+    return 0;
 }
 ```
 ## 效能分析
 
-1. 時間複雜度：Ackermann 函數成長速度非常快，即使是小數字也會呼叫很多次遞迴，時間複雜度非常高
+1. 時間複雜度：每個元素都有選與不選,2的n次方種新集合
 
-2. 空間複雜度：每一次遞迴會佔用一層記憶體堆疊，當 m 和 n 較大時，會造成堆疊太深，導致程式崩潰（Stack Overflow）
+2. 空間複雜度：儲存所有子集合需要同樣數量的空間
 
 ## 測試與驗證
 ### 測試案例
 
-| 測試案例 | 輸入 (m, n) | 預期輸出 | 實際輸出 |
+| 測試案例 | 輸入 S | 預期輸出 | 實際輸出 |
 |----------|-------------|----------|----------|
-| 測試一   | 0, 5        | 6        | 6        |
-| 測試二   | 1, 2        | 4        | 4        |
-| 測試三   | 2, 2        | 7        | 7        |
-| 測試四   | 3, 2        | 29       | 29       |
+| 測試一   | {}      | {0}      | {0}        |
+| 測試二   | {a}     | {0,(a)}  | {0,(a)}        |
+| 測試三   | {a,b}   | {0,(a),(b),(a,b)} | 正確       |
+| 測試四   | {a,b,c} | {0,(a),(b),(c),(a,b),(a,c),(b,c),(a,b,c)} | 正確      |
 
 ### 編譯與執行指令
 
-```bash
-g++ -std=c++17 -o ackermann ackermann.cpp
-./ackermann
-```
-## 結論
+$ g++ -std=c++17 -o powerset powerset.cpp
+$ ./powerset
 
-1. 使用遞迴實作 Ackermann 函數的方式非常符合其數學定義，邏輯清楚簡潔
-2. 程式可以正確計算出小範圍輸入的結果，如 A(3, 2) = 29
-3. 適合作為理解遞迴與數學遞推的練習，但在實務應用上有其限制
+
+## 結論
 
 ## 申論與開發報告
 
