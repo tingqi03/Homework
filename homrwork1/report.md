@@ -239,10 +239,10 @@ int main() {
 
 ### 編譯與執行指令
 
-```$ g++ -std=c++17 -o powerset powerset.cpp
-   $ ./powerset
+$ g++ -std=c++17 -o powerset powerset.cpp
+$ ./powerset
 
-```
+
 
 ### 結論
 
