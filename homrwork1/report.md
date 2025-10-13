@@ -180,52 +180,73 @@ Powerset
 
 ```cpp
 #include <iostream>
+#include <string>
+
 using namespace std;
 
-int sigma(int n) {
-    if (n < 0)
-        throw "n < 0";
-    else if (n <= 1)
-        return n;
-    return n + sigma(n - 1);
+
+void printSubsets(const vector<string>& set, vector<string>& currentSet, int index) {
+    
+    if (index == set.size()) {
+        // Print the current subset
+        cout << "{ ";
+        for (const auto& element : currentSet) {
+            cout << element << " ";
+        }
+        cout << "}" << endl;
+        return;
+    }
+
+    
+    currentSet.push_back(set[index]);
+    printSubsets(set, currentSet, index + 1);
+
+    
+    currentSet.pop_back();
+    printSubsets(set, currentSet, index + 1);
+}
+
+
+void computePowerset(const vector<string>& set) {
+    vector<string> currentSet; // Temporary vector to store current subset
+    printSubsets(set, currentSet, 0);
 }
 
 int main() {
-    int result = sigma(3);
-    cout << result << '\n';
+    vector<string> set = {"a", "b", "c"};  // Set S = {a, b, c}
+    
+    cout << "Powerset of {a, b, c} is:" << endl;
+    computePowerset(set);  
+    return 0;
 }
 ```
 
 ## 效能分析
 
-1. 時間複雜度：程式的時間複雜度為 $O(\log n)$。
-2. 空間複雜度：空間複雜度為 $O(100\times \log n + \pi)$。
+1. 時間複雜度：每個元素選與不選,因此共有2的n次方種子集合。
+2. 空間複雜度：儲存所有子集合的時間。
 
 ## 測試與驗證
 
 ### 測試案例
 
-| 測試案例 | 輸入參數 $n$ | 預期輸出 | 實際輸出 |
+| 測試案例 | 輸入參數 S | 預期輸出 | 實際輸出 |
 |----------|--------------|----------|----------|
-| 測試一   | $n = 0$      | 0        | 0        |
-| 測試二   | $n = 1$      | 1        | 1        |
-| 測試三   | $n = 3$      | 6        | 6        |
-| 測試四   | $n = 5$      | 15       | 15       |
-| 測試五   | $n = -1$     | 異常拋出 | 異常拋出 |
+| 測試一   | {}      | {0}       | {0}  |
+| 測試二   | {a}     | {0,(a)}   |{0,(a)} |
+| 測試三   | {a,b}   | {0,(a),(b),(a,b)} | 正確 |
+| 測試四   | {a,b,c} | {0,(a),(b),(c),(a,b),(a,c),(b,c),(a,b,c)} | 正確 |
 
 ### 編譯與執行指令
 
-```shell
-$ g++ -std=c++17 -o sigma sigma.cpp
-$ ./sigma
-6
+```$ g++ -std=c++17 -o powerset powerset.cpp
+   $ ./powerset
+
 ```
 
 ### 結論
 
-1. 程式能正確計算 $n$ 到 $1$ 的連加總和。  
-2. 在 $n < 0$ 的情況下，程式會成功拋出異常，符合設計預期。  
-3. 測試案例涵蓋了多種邊界情況（$n = 0$、$n = 1$、$n > 1$、$n < 0$），驗證程式的正確性。
+利用S的冪集合分解了問題與結構的思想。
 
 ## 申論及開發報告
 
@@ -233,33 +254,10 @@ $ ./sigma
 
 在本程式中，使用遞迴來計算連加總和的主要原因如下：
 
-1. **程式邏輯簡單直觀**  
-   遞迴的寫法能夠清楚表達「將問題拆解為更小的子問題」的核心概念。  
-   例如，計算 $\Sigma(n)$ 的過程可分解為：  
-
-   $$
-   \Sigma(n) = n + \Sigma(n-1)
-   $$
-
-   當 $n$ 等於 1 或 0 時，直接返回結果，結束遞迴。
-
-2. **易於理解與實現**  
-   遞迴的程式碼更接近數學公式的表示方式，特別適合新手學習遞迴的基本概念。  
-   以本程式為例：  
-
-   ```cpp
-   int sigma(int n) {
-       if (n < 0)
-           throw "n < 0";
-       else if (n <= 1)
-           return n;
-       return n + sigma(n - 1);
-   }
-   ```
-
-3. **遞迴的語意清楚**  
-   在程式中，每次遞迴呼叫都代表一個「子問題的解」，而最終遞迴的返回結果會逐層相加，完成整體問題的求解。  
-   這種設計簡化了邏輯，不需要額外變數來維護中間狀態。
-
-透過遞迴實作 Sigma 計算，程式邏輯簡單且易於理解，特別適合展示遞迴的核心思想。然而，遞迴會因堆疊深度受到限制，當 $n$ 值過大時，應考慮使用迭代版本來避免 Stack Overflow 問題。
+1. **程式邏輯簡單直觀**
+   使得整體邏輯更意理解
+2.**語意清晰且可擴充**
+    程式能容易擴充到任何型別得集合元素
+  
+   
 
