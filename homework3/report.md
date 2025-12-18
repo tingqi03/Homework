@@ -183,11 +183,13 @@ $ ./powerset
 
 
 ## 結論
+
 成功實作 Polynomial 類別，支援加、減、乘、Evaluate
 使用 Circular Linked List 搭配 iterator，程式邏輯清晰
 Available-space list 加分項能重用節點，提升效率
 可安全處理多項式運算，不會浪費記憶體
 ## 申論與開發報告
+
 本次作業透過 Circular Linked List 實作多項式 ADT，學習了：
 1.資料結構應用：Circular List + iterator
 2.演算法設計：Polynomial 運算邏輯
