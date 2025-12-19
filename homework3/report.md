@@ -5,7 +5,6 @@
 1. 能夠使用 Circular Linked List 實作 Polynomial ADT。
 2. 能正確完成多項式的加法、減法與乘法運算。
 3. 能分析各項操作的時間複雜度。
-4.  
 ## 解題說明
 本題要求實作一個 Polynomial 類別，能夠進行多項式加、減、乘運算，以及評估多項式的值。
 使用 Circular Linked List 搭配 Header Node，實作 Polynomial ADT，並透過 iterator 提供遍歷功能。
@@ -181,7 +180,6 @@ public:
 $ g++ -std=c++17 -o powerset powerset.cpp
 $ ./powerset
 
-
 ## 結論
 
 成功實作 Polynomial 類別，支援加、減、乘、Evaluate
@@ -189,7 +187,7 @@ $ ./powerset
 Available-space list 加分項能重用節點，提升效率
 可安全處理多項式運算，不會浪費記憶體
 
-### 申論與開發報告
+## 申論與開發報告
 
 本次作業透過 Circular Linked List 實作多項式 ADT，學習了：
 1.資料結構應用：Circular List + iterator
