@@ -183,10 +183,9 @@ $ ./powerset
 Available-space list 加分項能重用節點，提升效率
 可安全處理多項式運算，不會浪費記憶體
 
-##  解題與開發報告
+##  申論與開發報告
 
 本次作業透過 Circular Linked List 實作多項式 ADT，學習了：
-
 1.資料結構應用：Circular List + iterator
 2.演算法設計：Polynomial 運算邏輯
 3.記憶體管理：available-space list 讓刪除節點可重用
