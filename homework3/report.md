@@ -17,7 +17,6 @@ Programming Project
 #include <cmath>
 using namespace std;
 
-// ------------------ ChainNode ------------------
 template <class T>
 class ChainNode {
 public:
@@ -184,7 +183,7 @@ $ ./powerset
 Available-space list 加分項能重用節點，提升效率
 可安全處理多項式運算，不會浪費記憶體
 
-##  申論與開發報告
+##  解題與開發報告
 
 本次作業透過 Circular Linked List 實作多項式 ADT，學習了：
 1.資料結構應用：Circular List + iterator
