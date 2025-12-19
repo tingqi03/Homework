@@ -5,7 +5,7 @@
 1. 能夠使用 Circular Linked List 實作 Polynomial ADT。
 2. 能正確完成多項式的加法、減法與乘法運算。
 3. 能分析各項操作的時間複雜度。
-## 申論題解說
+## 解題說明
 本題要求實作一個 Polynomial 類別，能夠進行多項式加、減、乘運算，以及評估多項式的值。
 使用 Circular Linked List 搭配 Header Node，實作 Polynomial ADT，並透過 iterator 提供遍歷功能。
 ### 解題策略
