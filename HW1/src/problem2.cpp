@@ -1,80 +1,97 @@
 #include <iostream>
-#include <algorithm>
-#include <random>
+#include <cstdlib>
+#include <ctime>
 #include <cmath>
-#include <vector>
+using namespace std;
 
 struct Node {
     int key;
-    Node *left, *right;
+    Node* left;
+    Node* right;
     Node(int k) : key(k), left(nullptr), right(nullptr) {}
 };
 
 class BST {
-public:
-    Node* root = nullptr;
-
-    void insert(int key) {
-        root = insertRecursive(root, key);
-    }
-
-    int getHeight(Node* node) {
-        if (!node) return 0;
-        return 1 + std::max(getHeight(node->left), getHeight(node->right));
-    }
-
-   
-    void remove(int k) {
-        root = deleteNode(root, k);
-    }
-
 private:
-    Node* insertRecursive(Node* node, int key) {
+    Node* root;
+
+    Node* Insert(Node* node, int key) {
         if (!node) return new Node(key);
-        if (key < node->key) node->left = insertRecursive(node->left, key);
-        else if (key > node->key) node->right = insertRecursive(node->right, key);
+
+        if (key < node->key)
+            node->left = Insert(node->left, key);
+        else
+            node->right = Insert(node->right, key);
+
         return node;
     }
 
-    Node* findMin(Node* node) {
-        while (node && node->left) node = node->left;
-        return node;
+    int Height(Node* node) {
+        if (!node) return 0;
+        return 1 + max(Height(node->left), Height(node->right));
     }
 
-    Node* deleteNode(Node* node, int k) {
+    Node* Delete(Node* node, int key) {
         if (!node) return nullptr;
-        if (k < node->key) node->left = deleteNode(node->left, k);
-        else if (k > node->key) node->right = deleteNode(node->right, k);
+
+        if (key < node->key)
+            node->left = Delete(node->left, key);
+        else if (key > node->key)
+            node->right = Delete(node->right, key);
         else {
-           if (!node->left) {
-                Node* temp = node->right; delete node; return temp;
-            } else if (!node->right) {
-                Node* temp = node->left; delete node; return temp;
+            if (!node->left && !node->right) {
+                delete node;
+                return nullptr;
             }
-          
-            Node* temp = findMin(node->right);
-            node->key = temp->key;
-            node->right = deleteNode(node->right, temp->key);
+            if (!node->left) {
+                Node* temp = node->right;
+                delete node;
+                return temp;
+            }
+            if (!node->right) {
+                Node* temp = node->left;
+                delete node;
+                return temp;
+            }
+
+            Node* succ = node->right;
+            while (succ->left)
+                succ = succ->left;
+
+            node->key = succ->key;
+            node->right = Delete(node->right, succ->key);
         }
+
         return node;
     }
+
+public:
+    BST() { root = nullptr; }
+
+    void Insert(int key) { root = Insert(root, key); }
+
+    int GetHeight() { return Height(root); }
+
+    void DeleteKey(int key) { root = Delete(root, key); }
 };
 
-
 int main() {
-    std::vector<int> n_values = {100, 500, 1000, 2000, 3000, 5000, 10000};
-    std::random_device rd;
-    std::mt19937 gen(rd());
-    std::uniform_int_distribution<> dis(1, 1000000);
+    srand(time(0));
+    int test[] = {100, 500, 1000, 2000};
 
-    std::cout << "n\tHeight\tlog2(n)\tRatio (H/log2n)\n";
-    for (int n : n_values) {
+    for (int n : test) {
         BST tree;
-        for (int i = 0; i < n; ++i) tree.insert(dis(gen));
-        
-        int h = tree.getHeight(tree.root);
-        double log2n = std::log2(n);
-        std::cout << n << "\t" << h << "\t" << (int)log2n << "\t" << h/log2n << "\n";
+
+        for (int i = 0; i < n; i++)
+            tree.Insert(rand());
+
+        int h = tree.GetHeight();
+        double ratio = h / log2(n);
+
+        cout << "n=" << n
+             << " height=" << h
+             << " ratio=" << ratio << endl;
     }
+
     return 0;
 }
