@@ -1,7 +1,5 @@
 #include <iostream>
-#include <vector>
-#include <stdexcept>
-
+using namespace std;
 
 template <class T>
 class MinPQ {
@@ -9,63 +7,75 @@ public:
     virtual ~MinPQ() {}
     virtual bool IsEmpty() const = 0;
     virtual const T& Top() const = 0;
-    virtual void Push(const T& x) = 0;
+    virtual void Push(const T&) = 0;
     virtual void Pop() = 0;
 };
-
 
 template <class T>
 class MinHeap : public MinPQ<T> {
 private:
-    std::vector<T> heap;
+    T* heap;
+    int capacity;
+    int size;
+
+    void Resize() {
+        capacity *= 2;
+        T* newHeap = new T[capacity];
+        for (int i = 1; i <= size; i++)
+            newHeap[i] = heap[i];
+        delete[] heap;
+        heap = newHeap;
+    }
 
 public:
+    MinHeap(int cap = 100) {
+        capacity = cap;
+        size = 0;
+        heap = new T[capacity];
+    }
+
+    ~MinHeap() {
+        delete[] heap;
+    }
+
     bool IsEmpty() const override {
-        return heap.empty();
+        return size == 0;
     }
 
     const T& Top() const override {
-        if (IsEmpty()) throw std::runtime_error("Heap is empty");
-        return heap[0];
+        return heap[1];
     }
 
     void Push(const T& x) override {
-        heap.push_back(x); 
-        int current = heap.size() - 1;
-        
-       
-        while (current > 0) {
-            int parent = (current - 1) / 2;
-            if (heap[current] < heap[parent]) {
-                std::swap(heap[current], heap[parent]);
-                current = parent;
-            } else break;
+        if (size + 1 == capacity)
+            Resize();
+
+        int i = ++size;
+
+        while (i != 1 && x < heap[i / 2]) {
+            heap[i] = heap[i / 2];
+            i /= 2;
         }
+        heap[i] = x;
     }
 
     void Pop() override {
-        if (IsEmpty()) throw std::runtime_error("Heap is empty");
-        
-        heap[0] = heap.back(); 
-        heap.pop_back();
-        
-        if (!heap.empty()) {
-           
-            int current = 0;
-            int size = heap.size();
-            while (true) {
-                int left = 2 * current + 1;
-                int right = 2 * current + 2;
-                int smallest = current;
+        if (IsEmpty()) return;
 
-                if (left < size && heap[left] < heap[smallest]) smallest = left;
-                if (right < size && heap[right] < heap[smallest]) smallest = right;
+        T last = heap[size--];
+        int i = 1, child = 2;
 
-                if (smallest != current) {
-                    std::swap(heap[current], heap[smallest]);
-                    current = smallest;
-                } else break;
-            }
+        while (child <= size) {
+            if (child < size && heap[child] > heap[child + 1])
+                child++;
+
+            if (last <= heap[child]) break;
+
+            heap[i] = heap[child];
+            i = child;
+            child *= 2;
         }
+
+        heap[i] = last;
     }
 };
