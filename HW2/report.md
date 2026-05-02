@@ -170,7 +170,6 @@ BFS: 0 1 2 3
 Connected Components:
 Component 1: 0 1 3 2
 Component 2: 4
-./minheap
 ```
 
 ## 結論
