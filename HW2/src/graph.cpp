@@ -1,5 +1,4 @@
 #include <iostream>
-#include <queue>
 using namespace std;
 
 const int MAX = 100;
@@ -7,6 +6,7 @@ int graph[MAX][MAX];
 bool visited[MAX];
 int n;
 
+// DFS
 void DFS(int v) {
     visited[v] = true;
     cout << v << " ";
@@ -18,27 +18,43 @@ void DFS(int v) {
     }
 }
 
+// 手刻 Queue
+int q[MAX];
+int front = 0, rear = 0;
+
+void enqueue(int x) {
+    q[rear++] = x;
+}
+
+int dequeue() {
+    return q[front++];
+}
+
+bool isEmpty() {
+    return front == rear;
+}
+
+// BFS
 void BFS(int start) {
-    queue<int> q;
+    front = rear = 0;
 
     visited[start] = true;
-    q.push(start);
+    enqueue(start);
 
-    while (!q.empty()) {
-        int v = q.front();
-        q.pop();
-
+    while (!isEmpty()) {
+        int v = dequeue();
         cout << v << " ";
 
         for (int i = 0; i < n; i++) {
             if (graph[v][i] != 0 && !visited[i]) {
                 visited[i] = true;
-                q.push(i);
+                enqueue(i);
             }
         }
     }
 }
 
+// Connected Components
 void connectedComponents() {
     for (int i = 0; i < n; i++) {
         visited[i] = false;
