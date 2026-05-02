@@ -122,6 +122,7 @@ int main() {
 
     return 0;
 }
+
 ## 效能分析
 
 1.時間複雜度：
@@ -147,13 +148,17 @@ int main() {
 
 ## 測試與驗證
 ### 測試案例
+
 |測試案例|	Graph 類型|	起始點|	預期輸出| 實際輸出	|備註|
+|----------|-------------|----------|----------|
 |測試一	|無向無權重圖|	0|	DFS: 0 1 3 2|	DFS: 0 1 3 2|	驗證 DFS|
 |測試二|	無向無權重圖|	0	|BFS: 0 1 2 3|	BFS: 0 1 2 3|	驗證 BFS|
 |測試三|	非完全連通圖	|無	|Component 1: 0 1 3 2 | Component 2: 4|	Component 1: 0 1 3 2 / Component 2: 4|	驗證連通元件|
 |測試四|	單一節點圖|	0	|DFS: 0	|DFS: 0|	邊界情況|
 |測試五	|完全不連通圖|	無	|每個節點各自為一個 Component	|每個節點各自為一個 Component|	驗證獨立節點|
 ### 編譯與執行指令
+
+```bash
 $ g++ Graph.cpp -std=c++14 -o Graph
 $ Graph.exe
 DFS: 0 1 3 2
@@ -161,6 +166,8 @@ BFS: 0 1 2 3
 Connected Components:
 Component 1: 0 1 3 2
 Component 2: 4
+./minheap
+```
 
 ## 結論
 
@@ -170,26 +177,35 @@ Connected Components 可透過重複呼叫 DFS 或 BFS 找出所有連通區塊�
 若 Graph 為有權重無向圖，則可進一步使用 Kruskal 或 Prim 演算法求 Minimum Cost Spanning Tree。
 若 Graph 為有向無環圖，則可使用拓樸排序處理 Activity Network。
 
-### 申論及開發報告
-## 選擇鄰接矩陣的原因
+## 申論及開發報告
+
+### 選擇鄰接矩陣的原因
+
 1.實作簡單，適合初學者理解 Graph 結構。
 2.查詢兩點是否相連只需要 O(1)。
 3.對於節點數不大的題目，鄰接矩陣方便觀察與除錯。
-## 方法摘要
+
+### 方法摘要
+
 1.使用二維陣列 graph[i][j] 表示節點 i 與節點 j 是否相連。
 2.使用 visited[] 陣列記錄節點是否已被拜訪。
 3.DFS 使用遞迴方式拜訪下一個尚未走訪的節點。
 4.BFS 使用 Queue 依序處理同層節點。
 5.Connected Components 透過檢查所有未拜訪節點，找出所有連通區塊。
+
 ## 正確性要點
+
 1.DFS 每次只拜訪尚未拜訪的相鄰節點，因此不會重複走訪。
 2.BFS 使用 Queue 保證節點會依照距離起點的層級順序被處理。
 3.Connected Components 會檢查所有節點，因此即使 Graph 不連通，也能完整找出所有區塊。
+
 ## 缺點
+
 1.鄰接矩陣在節點很多但邊很少時會浪費空間。
 2.DFS 遞迴太深時可能造成 Stack Overflow。
 3.若 Graph 很大，使用鄰接串列會更有效率。
 ## 改進建議
+
 1.可改用鄰接串列降低空間成本。
 2.DFS 可改成非遞迴版本，避免遞迴過深。
 3.若加入權重，可擴充 Kruskal、Prim 或 Dijkstra 等演算法。
