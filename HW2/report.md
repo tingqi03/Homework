@@ -38,7 +38,6 @@ int graph[MAX][MAX];
 bool visited[MAX];
 int n;
 
-
 void DFS(int v) {
     visited[v] = true;
     cout << v << " ";
@@ -49,7 +48,6 @@ void DFS(int v) {
         }
     }
 }
-
 
 int q[MAX];
 int front = 0, rear = 0;
@@ -65,7 +63,6 @@ int dequeue() {
 bool isEmpty() {
     return front == rear;
 }
-
 
 void BFS(int start) {
     front = rear = 0;
@@ -85,7 +82,6 @@ void BFS(int start) {
         }
     }
 }
-
 
 void connectedComponents() {
     for (int i = 0; i < n; i++) {
