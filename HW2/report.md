@@ -6,9 +6,9 @@
 
 ## 解題說明
 
-本次作業主要針對 Graph（圖形結構）進行實作與分析，Graph 可由頂點與邊組成，常見類型包含有向圖、無向圖、有權重圖與無權重圖
+這次作業主要是針對Graph（圖形結構）的進行實作與分析，Graph 可由頂點與邊組成，常見類型包含有向圖、無向圖、有權重圖與無權重圖
 
-本作業使用鄰接矩陣表示 Graph，並實作以下功能：
+這次作業使用鄰接矩陣表示 Graph，並實作以下功能：
 
 1. 建立 Graph 的資料結構
 2. 實作 DFS（Depth First Search，深度優先搜尋）
@@ -38,7 +38,7 @@ int graph[MAX][MAX];
 bool visited[MAX];
 int n;
 
-// DFS
+
 void DFS(int v) {
     visited[v] = true;
     cout << v << " ";
@@ -50,7 +50,7 @@ void DFS(int v) {
     }
 }
 
-// 手刻 Queue
+
 int q[MAX];
 int front = 0, rear = 0;
 
@@ -66,7 +66,7 @@ bool isEmpty() {
     return front == rear;
 }
 
-// BFS
+
 void BFS(int start) {
     front = rear = 0;
 
@@ -86,7 +86,7 @@ void BFS(int start) {
     }
 }
 
-// Connected Components
+
 void connectedComponents() {
     for (int i = 0; i < n; i++) {
         visited[i] = false;
@@ -140,7 +140,7 @@ int main() {
 
 1.時間複雜度：
 
-本程式使用鄰接矩陣表示 Graph，因此在 DFS 與 BFS 中，每拜訪一個節點時，都需要掃描該節點與其他所有節點是否相鄰
+因為程式使用鄰接矩陣表示 Graph，因此在 DFS 與 BFS 中，每拜訪一個節點時，都需要掃描該節點與其他所有節點是否相鄰
 
 - DFS 需要檢查每個節點的所有相鄰狀態，因此時間複雜度為 O(n²)
 - BFS 同樣需要掃描鄰接矩陣，因此時間複雜度為 O(n²)
@@ -187,7 +187,7 @@ Component 2: 4
 
 ## 結論
 
-本次作業使用鄰接矩陣建立 Graph，並完成 DFS、BFS 與 Connected Components 的實作。
+這次作業使用鄰接矩陣建立 Graph，並完成 DFS、BFS 與 Connected Components 的實作。
 DFS 適合用於深入搜尋節點路徑，BFS 則適合依照層級順序進行搜尋。
 
 由測試結果可知，程式能正確輸出 DFS 與 BFS 的拜訪順序，也能成功判斷非完全連通圖中的不同連通元件。
