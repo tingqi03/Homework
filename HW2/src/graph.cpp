@@ -6,7 +6,6 @@ int graph[MAX][MAX];
 bool visited[MAX];
 int n;
 
-// DFS
 void DFS(int v) {
     visited[v] = true;
     cout << v << " ";
@@ -18,7 +17,7 @@ void DFS(int v) {
     }
 }
 
-// 手刻 Queue
+
 int q[MAX];
 int front = 0, rear = 0;
 
@@ -34,7 +33,7 @@ bool isEmpty() {
     return front == rear;
 }
 
-// BFS
+
 void BFS(int start) {
     front = rear = 0;
 
@@ -54,7 +53,7 @@ void BFS(int start) {
     }
 }
 
-// Connected Components
+
 void connectedComponents() {
     for (int i = 0; i < n; i++) {
         visited[i] = false;
