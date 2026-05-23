@@ -6,7 +6,7 @@
 
 ## 解題說明
 
-這次作業主要是練習幾種常見的排序演算法，透過自己實際寫程式，了解不同排序法的運作方式以及它們之間的差異。
+這次作業主要是實作幾種常見的排序演算法，透過自己實際寫程式來了解不同排序法的運作方式以及它們之間的差異。
 
 排序在很多程式中都很常用，例如查詢資料、整理資料或分析資料時，都會先進行排序，所以了解排序演算法是很重要的。
 
@@ -18,7 +18,7 @@
 4. Merge Sort（合併排序）
 5. Quick Sort（快速排序）
 
-除了完成排序功能之外，也比較它們的時間複雜度與空間複雜度。
+除了實作排序功能之外，也有比較各種排序的時間與空間複雜度。
 
 ## 解題策略
 
@@ -26,7 +26,7 @@
 2. 每個排序法分別寫成函式
 3. 使用同一組資料進行排序
 4. 排序後輸出結果確認是否正確
-5. 比較不同排序法的效率
+5. 比較不同排序法的效率差異
 
 ## 程式實作
 
@@ -34,6 +34,7 @@
 
 ```cpp
 #include <iostream>
+#include <algorithm>
 using namespace std;
 
 const int SIZE = 8;
@@ -233,7 +234,7 @@ int main() {
 |   Merge Sort   | O(n log n) | O(n log n) | O(n log n) |
 |   Quick Sort   | O(n log n) | O(n log n) |    O(n²)   |
 
-從表格可以看出，Bubble Sort 跟 Selection Sort 在資料量變大時效率會比較差，而 Merge Sort 跟 Quick Sort 的效率比較好
+從表格可以看出Bubble Sort 跟 Selection Sort 在資料量變大時效率會比較差，而 Merge Sort 跟 Quick Sort 的效率比較好
 
 
 2.空間複雜度：
