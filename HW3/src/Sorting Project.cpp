@@ -12,7 +12,7 @@ void printArray(int arr[]) {
     cout << endl;
 }
 
-// Bubble Sort
+
 void bubbleSort(int arr[]) {
 
     for (int i = 0; i < SIZE - 1; i++) {
@@ -26,7 +26,7 @@ void bubbleSort(int arr[]) {
     }
 }
 
-// Selection Sort
+
 void selectionSort(int arr[]) {
 
     for (int i = 0; i < SIZE - 1; i++) {
@@ -44,7 +44,7 @@ void selectionSort(int arr[]) {
     }
 }
 
-// Insertion Sort
+
 void insertionSort(int arr[]) {
 
     for (int i = 1; i < SIZE; i++) {
@@ -62,7 +62,7 @@ void insertionSort(int arr[]) {
     }
 }
 
-// Merge Sort
+
 void merge(int arr[], int left, int mid, int right) {
 
     int n1 = mid - left + 1;
@@ -122,7 +122,7 @@ void mergeSort(int arr[], int left, int right) {
     }
 }
 
-// Quick Sort
+
 int partition(int arr[], int low, int high) {
 
     int pivot = arr[high];
