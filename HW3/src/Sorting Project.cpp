@@ -1,224 +1,218 @@
-#include <iostream>
 #include <algorithm>
+#include <iostream>
+#include <ctime>
+
 using namespace std;
 
-const int SIZE = 8;
+// ====================== 基本工具 ======================
 
-void printArray(int arr[]) {
-    for (int i = 0; i < SIZE; i++) {
-        cout << arr[i] << " ";
-    }
-    cout << endl;
+void copyArray(int from[], int to[], int n)
+{
+    for(int i = 0; i < n; i++)
+        to[i] = from[i];
 }
 
-void printCost(long long compareCount, long long moveCount) {
-    cout << "Compare Count: " << compareCount << endl;
-    cout << "Move/Swap Count: " << moveCount << endl;
-    cout << endl;
+void worstData(int a[], int n)
+{
+    for(int i = 0; i < n; i++)
+        a[i] = n - i;
 }
 
-void bubbleSort(int arr[], long long& compareCount, long long& moveCount) {
-    for (int i = 0; i < SIZE - 1; i++) {
-        for (int j = 0; j < SIZE - i - 1; j++) {
-            compareCount++;
+// ====================== Insertion Sort ======================
 
-            if (arr[j] > arr[j + 1]) {
-                swap(arr[j], arr[j + 1]);
-                moveCount++;
-            }
-        }
-    }
-}
-
-void selectionSort(int arr[], long long& compareCount, long long& moveCount) {
-    for (int i = 0; i < SIZE - 1; i++) {
-        int minIndex = i;
-
-        for (int j = i + 1; j < SIZE; j++) {
-            compareCount++;
-
-            if (arr[j] < arr[minIndex]) {
-                minIndex = j;
-            }
-        }
-
-        if (minIndex != i) {
-            swap(arr[i], arr[minIndex]);
-            moveCount++;
-        }
-    }
-}
-
-void insertionSort(int arr[], long long& compareCount, long long& moveCount) {
-    for (int i = 1; i < SIZE; i++) {
-        int key = arr[i];
+void insertionSort(int a[], int n)
+{
+    for(int i = 1; i < n; i++)
+    {
+        int key = a[i];
         int j = i - 1;
 
-        while (j >= 0) {
-            compareCount++;
-
-            if (arr[j] > key) {
-                arr[j + 1] = arr[j];
-                moveCount++;
-                j--;
-            }
-            else {
-                break;
-            }
+        while(j >= 0 && a[j] > key)
+        {
+            a[j + 1] = a[j];
+            j--;
         }
-
-        arr[j + 1] = key;
-        moveCount++;
+        a[j + 1] = key;
     }
 }
 
-void merge(int arr[], int left, int mid, int right,
-    long long& compareCount, long long& moveCount) {
+// ====================== Quick Sort ======================
 
-    int n1 = mid - left + 1;
-    int n2 = right - mid;
+void medianOfThree(int a[], int low, int high)
+{
+    int mid = (low + high) / 2;
 
-    int L[100], R[100];
+    if(a[low] > a[mid]) swap(a[low], a[mid]);
+    if(a[low] > a[high]) swap(a[low], a[high]);
+    if(a[mid] > a[high]) swap(a[mid], a[high]);
 
-    for (int i = 0; i < n1; i++) {
-        L[i] = arr[left + i];
-        moveCount++;
-    }
-
-    for (int j = 0; j < n2; j++) {
-        R[j] = arr[mid + 1 + j];
-        moveCount++;
-    }
-
-    int i = 0;
-    int j = 0;
-    int k = left;
-
-    while (i < n1 && j < n2) {
-        compareCount++;
-
-        if (L[i] <= R[j]) {
-            arr[k] = L[i];
-            i++;
-        }
-        else {
-            arr[k] = R[j];
-            j++;
-        }
-
-        moveCount++;
-        k++;
-    }
-
-    while (i < n1) {
-        arr[k] = L[i];
-        i++;
-        k++;
-        moveCount++;
-    }
-
-    while (j < n2) {
-        arr[k] = R[j];
-        j++;
-        k++;
-        moveCount++;
-    }
+    swap(a[mid], a[high]);
 }
 
-void mergeSort(int arr[], int left, int right,
-    long long& compareCount, long long& moveCount) {
+int partition(int a[], int low, int high)
+{
+    medianOfThree(a, low, high);
 
-    if (left < right) {
-        int mid = (left + right) / 2;
-
-        mergeSort(arr, left, mid, compareCount, moveCount);
-        mergeSort(arr, mid + 1, right, compareCount, moveCount);
-
-        merge(arr, left, mid, right, compareCount, moveCount);
-    }
-}
-
-int partition(int arr[], int low, int high,
-    long long& compareCount, long long& moveCount) {
-
-    int pivot = arr[high];
+    int pivot = a[high];
     int i = low - 1;
 
-    for (int j = low; j < high; j++) {
-        compareCount++;
-
-        if (arr[j] < pivot) {
+    for(int j = low; j < high; j++)
+    {
+        if(a[j] < pivot)
+        {
             i++;
-            swap(arr[i], arr[j]);
-            moveCount++;
+            swap(a[i], a[j]);
         }
     }
 
-    swap(arr[i + 1], arr[high]);
-    moveCount++;
-
+    swap(a[i + 1], a[high]);
     return i + 1;
 }
 
-void quickSort(int arr[], int low, int high,
-    long long& compareCount, long long& moveCount) {
-
-    if (low < high) {
-        int pi = partition(arr, low, high, compareCount, moveCount);
-
-        quickSort(arr, low, pi - 1, compareCount, moveCount);
-        quickSort(arr, pi + 1, high, compareCount, moveCount);
+void quickSort(int a[], int low, int high)
+{
+    if(low < high)
+    {
+        int pi = partition(a, low, high);
+        quickSort(a, low, pi - 1);
+        quickSort(a, pi + 1, high);
     }
 }
 
-int main() {
-    int data1[SIZE] = { 64, 34, 25, 12, 22, 11, 90, 5 };
-    int data2[SIZE] = { 64, 34, 25, 12, 22, 11, 90, 5 };
-    int data3[SIZE] = { 64, 34, 25, 12, 22, 11, 90, 5 };
-    int data4[SIZE] = { 64, 34, 25, 12, 22, 11, 90, 5 };
-    int data5[SIZE] = { 64, 34, 25, 12, 22, 11, 90, 5 };
+void quickWrapper(int a[], int n)
+{
+    quickSort(a, 0, n - 1);
+}
 
-    long long compareCount = 0;
-    long long moveCount = 0;
+// ====================== Merge Sort (Bottom-up) ======================
 
-    cout << "Original Array: ";
-    printArray(data1);
-    cout << endl;
+void merge(int a[], int left, int mid, int right)
+{
+    int n1 = mid - left + 1;
+    int n2 = right - mid;
 
-    compareCount = 0;
-    moveCount = 0;
-    bubbleSort(data1, compareCount, moveCount);
-    cout << "Bubble Sort: ";
-    printArray(data1);
-    printCost(compareCount, moveCount);
+    int* L = new int[n1];
+    int* R = new int[n2];
 
-    compareCount = 0;
-    moveCount = 0;
-    selectionSort(data2, compareCount, moveCount);
-    cout << "Selection Sort: ";
-    printArray(data2);
-    printCost(compareCount, moveCount);
+    for(int i = 0; i < n1; i++)
+        L[i] = a[left + i];
 
-    compareCount = 0;
-    moveCount = 0;
-    insertionSort(data3, compareCount, moveCount);
-    cout << "Insertion Sort: ";
-    printArray(data3);
-    printCost(compareCount, moveCount);
+    for(int j = 0; j < n2; j++)
+        R[j] = a[mid + 1 + j];
 
-    compareCount = 0;
-    moveCount = 0;
-    mergeSort(data4, 0, SIZE - 1, compareCount, moveCount);
-    cout << "Merge Sort: ";
-    printArray(data4);
-    printCost(compareCount, moveCount);
+    int i = 0, j = 0, k = left;
 
-    compareCount = 0;
-    moveCount = 0;
-    quickSort(data5, 0, SIZE - 1, compareCount, moveCount);
-    cout << "Quick Sort: ";
-    printArray(data5);
-    printCost(compareCount, moveCount);
+    while(i < n1 && j < n2)
+        a[k++] = (L[i] <= R[j]) ? L[i++] : R[j++];
+
+    while(i < n1) a[k++] = L[i++];
+    while(j < n2) a[k++] = R[j++];
+
+    delete[] L;
+    delete[] R;
+}
+
+void mergeSort(int a[], int n)
+{
+    for(int size = 1; size < n; size *= 2)
+    {
+        for(int left = 0; left < n - 1; left += 2 * size)
+        {
+            int mid = min(left + size - 1, n - 1);
+            int right = min(left + 2 * size - 1, n - 1);
+
+            if(mid < right)
+                merge(a, left, mid, right);
+        }
+    }
+}
+
+// ====================== Heap Sort ======================
+
+void heapify(int a[], int n, int i)
+{
+    int largest = i;
+    int l = 2 * i + 1;
+    int r = 2 * i + 2;
+
+    if(l < n && a[l] > a[largest]) largest = l;
+    if(r < n && a[r] > a[largest]) largest = r;
+
+    if(largest != i)
+    {
+        swap(a[i], a[largest]);
+        heapify(a, n, largest);
+    }
+}
+
+void heapSort(int a[], int n)
+{
+    for(int i = n / 2 - 1; i >= 0; i--)
+        heapify(a, n, i);
+
+    for(int i = n - 1; i > 0; i--)
+    {
+        swap(a[0], a[i]);
+        heapify(a, i, 0);
+    }
+}
+
+// ====================== Composite Sort ======================
+
+void compositeSort(int a[], int n)
+{
+    if(n <= 50)
+        insertionSort(a, n);
+    else
+        quickWrapper(a, n);
+}
+
+// ====================== 計時 ======================
+
+double measureTime(void (*func)(int*, int), int data[], int n)
+{
+    int* temp = new int[n];
+
+    for(int i = 0; i < n; i++)
+        temp[i] = data[i];
+
+    clock_t start = clock();
+
+    func(temp, n);
+
+    clock_t end = clock();
+
+    double ms = (double)(end - start) / CLOCKS_PER_SEC * 1000;
+
+    delete[] temp;
+    return ms;
+}
+
+// ====================== 主程式 ======================
+
+int main()
+{
+    int sizes[6] = {500, 1000, 2000, 3000, 4000, 5000};
+
+    cout << "n\tInsertion\tQuick\tMerge\tHeap\tComposite\n";
+
+    for(int i = 0; i < 6; i++)
+    {
+        int n = sizes[i];
+        int* data = new int[n];
+
+        worstData(data, n);
+
+        cout << n << "\t"
+             << measureTime(insertionSort, data, n) << "\t"
+             << measureTime(quickWrapper, data, n) << "\t"
+             << measureTime(mergeSort, data, n) << "\t"
+             << measureTime(heapSort, data, n) << "\t"
+             << measureTime(compositeSort, data, n)
+             << endl;
+
+        delete[] data;
+    }
 
     return 0;
 }
