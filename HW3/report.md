@@ -38,7 +38,6 @@
 #include <iostream>
 #include <algorithm>
 #include <chrono>
-#include <fstream>
 
 using namespace std;
 using namespace chrono;
@@ -47,18 +46,14 @@ using namespace chrono;
 void copyArray(int from[], int to[], int n)
 {
     for(int i = 0; i < n; i++)
-    {
         to[i] = from[i];
-    }
 }
 
-// 產生 Worst Case Data
+// Worst Case Data（遞減）
 void worstData(int a[], int n)
 {
     for(int i = 0; i < n; i++)
-    {
         a[i] = n - i;
-    }
 }
 
 // Insertion Sort
@@ -74,34 +69,28 @@ void insertionSort(int a[], int n)
             a[j + 1] = a[j];
             j--;
         }
-
         a[j + 1] = key;
     }
 }
 
-// Median-of-Three
-int medianOfThree(int a[], int low, int high)
+// Median-of-Three（修正版）
+void medianOfThree(int a[], int low, int high)
 {
     int mid = (low + high) / 2;
 
-    if(a[low] > a[mid])
-        swap(a[low], a[mid]);
-
-    if(a[low] > a[high])
-        swap(a[low], a[high]);
-
-    if(a[mid] > a[high])
-        swap(a[mid], a[high]);
+    if(a[low] > a[mid]) swap(a[low], a[mid]);
+    if(a[low] > a[high]) swap(a[low], a[high]);
+    if(a[mid] > a[high]) swap(a[mid], a[high]);
 
     swap(a[mid], a[high]);
-
-    return a[high];
 }
 
-// Quick Sort
+// Quick Sort Partition（標準版）
 int partition(int a[], int low, int high)
 {
-    int pivot = medianOfThree(a, low, high);
+    medianOfThree(a, low, high);
+
+    int pivot = a[high];
     int i = low - 1;
 
     for(int j = low; j < high; j++)
@@ -114,7 +103,6 @@ int partition(int a[], int low, int high)
     }
 
     swap(a[i + 1], a[high]);
-
     return i + 1;
 }
 
@@ -123,13 +111,12 @@ void quickSort(int a[], int low, int high)
     if(low < high)
     {
         int pi = partition(a, low, high);
-
         quickSort(a, low, pi - 1);
         quickSort(a, pi + 1, high);
     }
 }
 
-// Merge Sort
+// Bottom-up Merge Sort
 void merge(int a[], int left, int mid, int right)
 {
     int n1 = mid - left + 1;
@@ -144,23 +131,13 @@ void merge(int a[], int left, int mid, int right)
     for(int j = 0; j < n2; j++)
         R[j] = a[mid + 1 + j];
 
-    int i = 0;
-    int j = 0;
-    int k = left;
+    int i = 0, j = 0, k = left;
 
     while(i < n1 && j < n2)
-    {
-        if(L[i] <= R[j])
-            a[k++] = L[i++];
-        else
-            a[k++] = R[j++];
-    }
+        a[k++] = (L[i] <= R[j]) ? L[i++] : R[j++];
 
-    while(i < n1)
-        a[k++] = L[i++];
-
-    while(j < n2)
-        a[k++] = R[j++];
+    while(i < n1) a[k++] = L[i++];
+    while(j < n2) a[k++] = R[j++];
 
     delete[] L;
     delete[] R;
@@ -185,14 +162,11 @@ void mergeSort(int a[], int n)
 void heapify(int a[], int n, int i)
 {
     int largest = i;
-    int left = 2 * i + 1;
-    int right = 2 * i + 2;
+    int l = 2 * i + 1;
+    int r = 2 * i + 2;
 
-    if(left < n && a[left] > a[largest])
-        largest = left;
-
-    if(right < n && a[right] > a[largest])
-        largest = right;
+    if(l < n && a[l] > a[largest]) largest = l;
+    if(r < n && a[r] > a[largest]) largest = r;
 
     if(largest != i)
     {
@@ -203,7 +177,7 @@ void heapify(int a[], int n, int i)
 
 void heapSort(int a[], int n)
 {
-    for(int i = n / 2 - 1; i >= 0; i--)
+    for(int i = n/2 - 1; i >= 0; i--)
         heapify(a, n, i);
 
     for(int i = n - 1; i > 0; i--)
@@ -213,7 +187,7 @@ void heapSort(int a[], int n)
     }
 }
 
-// Composite Sort
+// Composite Sort（混合策略）
 void compositeSort(int a[], int n)
 {
     if(n <= 50)
@@ -222,24 +196,23 @@ void compositeSort(int a[], int n)
         quickSort(a, 0, n - 1);
 }
 
-// 計時函式
+// 計時（避免優化）
 template <typename Func>
 double measureTime(Func sortFunc, int data[], int n)
 {
     int* temp = new int[n];
-
     copyArray(data, temp, n);
 
+    volatile int sink = 0;
+
     auto start = high_resolution_clock::now();
-
     sortFunc(temp, n);
-
+    sink += temp[0];
     auto end = high_resolution_clock::now();
 
     duration<double, milli> time = end - start;
 
     delete[] temp;
-
     return time.count();
 }
 
@@ -247,72 +220,22 @@ int main()
 {
     int sizes[6] = {500,1000,2000,3000,4000,5000};
 
-    cout << "n\tInsertion\tQuick\tMerge\tHeap\tComposite" << endl;
+    cout << "n\tInsertion\tQuick\tMerge\tHeap\tComposite\n";
 
     for(int i = 0; i < 6; i++)
     {
         int n = sizes[i];
-
         int* data = new int[n];
 
         worstData(data, n);
 
-        double insertionTime =
-            measureTime(
-                [](int a[], int n)
-                {
-                    insertionSort(a, n);
-                },
-                data,
-                n
-            );
-
-        double quickTime =
-            measureTime(
-                [](int a[], int n)
-                {
-                    quickSort(a, 0, n - 1);
-                },
-                data,
-                n
-            );
-
-        double mergeTime =
-            measureTime(
-                [](int a[], int n)
-                {
-                    mergeSort(a, n);
-                },
-                data,
-                n
-            );
-
-        double heapTime =
-            measureTime(
-                [](int a[], int n)
-                {
-                    heapSort(a, n);
-                },
-                data,
-                n
-            );
-
-        double compositeTime =
-            measureTime(
-                [](int a[], int n)
-                {
-                    compositeSort(a, n);
-                },
-                data,
-                n
-            );
-
         cout << n << "\t"
-             << insertionTime << "\t"
-             << quickTime << "\t"
-             << mergeTime << "\t"
-             << heapTime << "\t"
-             << compositeTime << endl;
+             << measureTime([](int a[], int n){ insertionSort(a,n); }, data, n) << "\t"
+             << measureTime([](int a[], int n){ quickSort(a,0,n-1); }, data, n) << "\t"
+             << measureTime([](int a[], int n){ mergeSort(a,n); }, data, n) << "\t"
+             << measureTime([](int a[], int n){ heapSort(a,n); }, data, n) << "\t"
+             << measureTime([](int a[], int n){ compositeSort(a,n); }, data, n)
+             << endl;
 
         delete[] data;
     }
@@ -349,14 +272,14 @@ Merge Sort 因為需要額外陣列進行合併，所以空間需求較高。
 
 ## 測試與驗證
 
-| n |     Insertion Sort      | Quick Sort    | Quick Sort      | Heap Sort    |  Composite Sort    |
-| :--: | :------------: | :--------------------- | :--------------------- | :--- |
-|  500 |  0.41  | 0.05 | 0.08 |  0.10| 0.05 |
-|  1000 | 1.62 | 0.09 |0.17| 0.22 | 0.09|
-|  2000 | 6.48 | 0.20| 0.38| 0.50 |0.20|
-|  3000 |  14.55   |0.32 | 0.60 | 0.81 | 0.32|
-|  4000 |   25.90   | 0.45 | 0.84| 1.12| 0.45|
-| 5000  |   40.45  |0.59 | 1.10 | 1.46|  0.59|
+| n | Insertion Sort| Quick Sort | Merge Sort| Heap Sort | Composite Sort |
+|---|----------------:|----------:|---------:|--------:|----------:|
+|  500 |  0.41  | 0.05 | 0.08 |  0.10 | 0.05 |
+|  1000 | 1.62 | 0.09 | 0.17 | 0.22 | 0.09|
+|  2000 | 6.48 | 0.20 | 0.38 | 0.50 |0.20|
+|  3000 |  14.55   |0.32 | 0.60 | 0.81 | 0.32 |
+|  4000 |   25.90   | 0.45 | 0.84 | 1.12 | 0.45 |
+| 5000  |   40.45  |0.59 | 1.10 | 1.46 |  0.59 |
 
 從結果可以發現，Insertion Sort 的執行時間隨著資料量增加而快速上升。
 
@@ -376,12 +299,11 @@ Sorting.exe
 
 ## 結論
 
-- 這次作業實際寫了五種排序演算法，透過比較不同排序方式，可以更清楚知道它們的差異
-- Bubble Sort 跟 Selection Sort 雖然比較簡單，但資料變多之後效率會比較差
-- Insertion Sort 在資料量小的時候其實還不錯，而且程式也比較好理解
-- Merge Sort 跟 Quick Sort 的效率比較高，其中 Quick Sort 平均速度很快，所以很多程式都會使用
-- 這次作業除了學到排序演算法之外，也更熟悉函式、陣列以及遞迴的使用方式
-
+- Insertion Sort 在小資料仍可使用，但受 O(n²) 限制影響明顯
+- Quick Sort 在平均情況下表現最佳
+- Merge Sort 穩定但需要額外記憶體
+- Heap Sort 效能穩定但常數較大
+- Composite Sort 可在小資料提升效能
 ## 申論及開發報告
 
 ### 為什麼選擇這些排序法
