@@ -12,21 +12,23 @@
 
 這次作業實作的排序方法有：
 
-1. Bubble Sort（氣泡排序）
-2. Selection Sort（選擇排序）
-3. Insertion Sort（插入排序）
-4. Merge Sort（合併排序）
-5. Quick Sort（快速排序）
+1. Insertion Sort
+2. Quick Sort（Median-of-Three）
+3. Iterative Merge Sort
+4. Heap Sort
+5. Composite Sort
 
-除了實作排序功能之外，也有比較各種排序的時間與空間複雜度。
+另外利用不同大小的資料進行測試，並利用 chrono 計算執行時間，最後整理結果進行比較。
 
 ## 解題策略
 
-1. 使用陣列存放資料
-2. 每個排序法分別寫成函式
-3. 使用同一組資料進行排序
-4. 排序後輸出結果確認是否正確
-5. 比較不同排序法的效率差異
+1. 建立測試資料。
+2. 產生 Worst Case Data。
+3. 複製相同資料給各排序法使用。
+4. 執行排序。
+5. 利用 chrono 計算執行時間。
+6. 整理測試結果。
+7. 比較各排序法的效率差異
 
 ## 程式實作
 
@@ -35,225 +37,285 @@
 ```cpp
 #include <iostream>
 #include <algorithm>
+#include <chrono>
+#include <fstream>
+
 using namespace std;
+using namespace chrono;
 
-const int SIZE = 8;
-
-void printArray(int arr[]) {
-    for (int i = 0; i < SIZE; i++) {
-        cout << arr[i] << " ";
-    }
-    cout << endl;
-}
-
-void printCost(long long compareCount, long long moveCount) {
-    cout << "Compare Count: " << compareCount << endl;
-    cout << "Move/Swap Count: " << moveCount << endl;
-    cout << endl;
-}
-
-void bubbleSort(int arr[], long long& compareCount, long long& moveCount) {
-    for (int i = 0; i < SIZE - 1; i++) {
-        for (int j = 0; j < SIZE - i - 1; j++) {
-            compareCount++;
-
-            if (arr[j] > arr[j + 1]) {
-                swap(arr[j], arr[j + 1]);
-                moveCount++;
-            }
-        }
+// 複製陣列
+void copyArray(int from[], int to[], int n)
+{
+    for(int i = 0; i < n; i++)
+    {
+        to[i] = from[i];
     }
 }
 
-void selectionSort(int arr[], long long& compareCount, long long& moveCount) {
-    for (int i = 0; i < SIZE - 1; i++) {
-        int minIndex = i;
-
-        for (int j = i + 1; j < SIZE; j++) {
-            compareCount++;
-
-            if (arr[j] < arr[minIndex]) {
-                minIndex = j;
-            }
-        }
-
-        if (minIndex != i) {
-            swap(arr[i], arr[minIndex]);
-            moveCount++;
-        }
+// 產生 Worst Case Data
+void worstData(int a[], int n)
+{
+    for(int i = 0; i < n; i++)
+    {
+        a[i] = n - i;
     }
 }
 
-void insertionSort(int arr[], long long& compareCount, long long& moveCount) {
-    for (int i = 1; i < SIZE; i++) {
-        int key = arr[i];
+// Insertion Sort
+void insertionSort(int a[], int n)
+{
+    for(int i = 1; i < n; i++)
+    {
+        int key = a[i];
         int j = i - 1;
 
-        while (j >= 0) {
-            compareCount++;
-
-            if (arr[j] > key) {
-                arr[j + 1] = arr[j];
-                moveCount++;
-                j--;
-            }
-            else {
-                break;
-            }
+        while(j >= 0 && a[j] > key)
+        {
+            a[j + 1] = a[j];
+            j--;
         }
 
-        arr[j + 1] = key;
-        moveCount++;
+        a[j + 1] = key;
     }
 }
 
-void merge(int arr[], int left, int mid, int right,
-    long long& compareCount, long long& moveCount) {
+// Median-of-Three
+int medianOfThree(int a[], int low, int high)
+{
+    int mid = (low + high) / 2;
 
+    if(a[low] > a[mid])
+        swap(a[low], a[mid]);
+
+    if(a[low] > a[high])
+        swap(a[low], a[high]);
+
+    if(a[mid] > a[high])
+        swap(a[mid], a[high]);
+
+    swap(a[mid], a[high]);
+
+    return a[high];
+}
+
+// Quick Sort
+int partition(int a[], int low, int high)
+{
+    int pivot = medianOfThree(a, low, high);
+    int i = low - 1;
+
+    for(int j = low; j < high; j++)
+    {
+        if(a[j] < pivot)
+        {
+            i++;
+            swap(a[i], a[j]);
+        }
+    }
+
+    swap(a[i + 1], a[high]);
+
+    return i + 1;
+}
+
+void quickSort(int a[], int low, int high)
+{
+    if(low < high)
+    {
+        int pi = partition(a, low, high);
+
+        quickSort(a, low, pi - 1);
+        quickSort(a, pi + 1, high);
+    }
+}
+
+// Merge Sort
+void merge(int a[], int left, int mid, int right)
+{
     int n1 = mid - left + 1;
     int n2 = right - mid;
 
-    int L[100], R[100];
+    int* L = new int[n1];
+    int* R = new int[n2];
 
-    for (int i = 0; i < n1; i++) {
-        L[i] = arr[left + i];
-        moveCount++;
-    }
+    for(int i = 0; i < n1; i++)
+        L[i] = a[left + i];
 
-    for (int j = 0; j < n2; j++) {
-        R[j] = arr[mid + 1 + j];
-        moveCount++;
-    }
+    for(int j = 0; j < n2; j++)
+        R[j] = a[mid + 1 + j];
 
     int i = 0;
     int j = 0;
     int k = left;
 
-    while (i < n1 && j < n2) {
-        compareCount++;
-
-        if (L[i] <= R[j]) {
-            arr[k] = L[i];
-            i++;
-        }
-        else {
-            arr[k] = R[j];
-            j++;
-        }
-
-        moveCount++;
-        k++;
+    while(i < n1 && j < n2)
+    {
+        if(L[i] <= R[j])
+            a[k++] = L[i++];
+        else
+            a[k++] = R[j++];
     }
 
-    while (i < n1) {
-        arr[k] = L[i];
-        i++;
-        k++;
-        moveCount++;
-    }
+    while(i < n1)
+        a[k++] = L[i++];
 
-    while (j < n2) {
-        arr[k] = R[j];
-        j++;
-        k++;
-        moveCount++;
-    }
+    while(j < n2)
+        a[k++] = R[j++];
+
+    delete[] L;
+    delete[] R;
 }
 
-void mergeSort(int arr[], int left, int right,
-    long long& compareCount, long long& moveCount) {
+void mergeSort(int a[], int n)
+{
+    for(int size = 1; size < n; size *= 2)
+    {
+        for(int left = 0; left < n - 1; left += 2 * size)
+        {
+            int mid = min(left + size - 1, n - 1);
+            int right = min(left + 2 * size - 1, n - 1);
 
-    if (left < right) {
-        int mid = (left + right) / 2;
-
-        mergeSort(arr, left, mid, compareCount, moveCount);
-        mergeSort(arr, mid + 1, right, compareCount, moveCount);
-
-        merge(arr, left, mid, right, compareCount, moveCount);
-    }
-}
-
-int partition(int arr[], int low, int high,
-    long long& compareCount, long long& moveCount) {
-
-    int pivot = arr[high];
-    int i = low - 1;
-
-    for (int j = low; j < high; j++) {
-        compareCount++;
-
-        if (arr[j] < pivot) {
-            i++;
-            swap(arr[i], arr[j]);
-            moveCount++;
+            if(mid < right)
+                merge(a, left, mid, right);
         }
     }
-
-    swap(arr[i + 1], arr[high]);
-    moveCount++;
-
-    return i + 1;
 }
 
-void quickSort(int arr[], int low, int high,
-    long long& compareCount, long long& moveCount) {
+// Heap Sort
+void heapify(int a[], int n, int i)
+{
+    int largest = i;
+    int left = 2 * i + 1;
+    int right = 2 * i + 2;
 
-    if (low < high) {
-        int pi = partition(arr, low, high, compareCount, moveCount);
+    if(left < n && a[left] > a[largest])
+        largest = left;
 
-        quickSort(arr, low, pi - 1, compareCount, moveCount);
-        quickSort(arr, pi + 1, high, compareCount, moveCount);
+    if(right < n && a[right] > a[largest])
+        largest = right;
+
+    if(largest != i)
+    {
+        swap(a[i], a[largest]);
+        heapify(a, n, largest);
     }
 }
 
-int main() {
-    int data1[SIZE] = { 64, 34, 25, 12, 22, 11, 90, 5 };
-    int data2[SIZE] = { 64, 34, 25, 12, 22, 11, 90, 5 };
-    int data3[SIZE] = { 64, 34, 25, 12, 22, 11, 90, 5 };
-    int data4[SIZE] = { 64, 34, 25, 12, 22, 11, 90, 5 };
-    int data5[SIZE] = { 64, 34, 25, 12, 22, 11, 90, 5 };
+void heapSort(int a[], int n)
+{
+    for(int i = n / 2 - 1; i >= 0; i--)
+        heapify(a, n, i);
 
-    long long compareCount = 0;
-    long long moveCount = 0;
+    for(int i = n - 1; i > 0; i--)
+    {
+        swap(a[0], a[i]);
+        heapify(a, i, 0);
+    }
+}
 
-    cout << "Original Array: ";
-    printArray(data1);
-    cout << endl;
+// Composite Sort
+void compositeSort(int a[], int n)
+{
+    if(n <= 50)
+        insertionSort(a, n);
+    else
+        quickSort(a, 0, n - 1);
+}
 
-    compareCount = 0;
-    moveCount = 0;
-    bubbleSort(data1, compareCount, moveCount);
-    cout << "Bubble Sort: ";
-    printArray(data1);
-    printCost(compareCount, moveCount);
+// 計時函式
+template <typename Func>
+double measureTime(Func sortFunc, int data[], int n)
+{
+    int* temp = new int[n];
 
-    compareCount = 0;
-    moveCount = 0;
-    selectionSort(data2, compareCount, moveCount);
-    cout << "Selection Sort: ";
-    printArray(data2);
-    printCost(compareCount, moveCount);
+    copyArray(data, temp, n);
 
-    compareCount = 0;
-    moveCount = 0;
-    insertionSort(data3, compareCount, moveCount);
-    cout << "Insertion Sort: ";
-    printArray(data3);
-    printCost(compareCount, moveCount);
+    auto start = high_resolution_clock::now();
 
-    compareCount = 0;
-    moveCount = 0;
-    mergeSort(data4, 0, SIZE - 1, compareCount, moveCount);
-    cout << "Merge Sort: ";
-    printArray(data4);
-    printCost(compareCount, moveCount);
+    sortFunc(temp, n);
 
-    compareCount = 0;
-    moveCount = 0;
-    quickSort(data5, 0, SIZE - 1, compareCount, moveCount);
-    cout << "Quick Sort: ";
-    printArray(data5);
-    printCost(compareCount, moveCount);
+    auto end = high_resolution_clock::now();
+
+    duration<double, milli> time = end - start;
+
+    delete[] temp;
+
+    return time.count();
+}
+
+int main()
+{
+    int sizes[6] = {500,1000,2000,3000,4000,5000};
+
+    cout << "n\tInsertion\tQuick\tMerge\tHeap\tComposite" << endl;
+
+    for(int i = 0; i < 6; i++)
+    {
+        int n = sizes[i];
+
+        int* data = new int[n];
+
+        worstData(data, n);
+
+        double insertionTime =
+            measureTime(
+                [](int a[], int n)
+                {
+                    insertionSort(a, n);
+                },
+                data,
+                n
+            );
+
+        double quickTime =
+            measureTime(
+                [](int a[], int n)
+                {
+                    quickSort(a, 0, n - 1);
+                },
+                data,
+                n
+            );
+
+        double mergeTime =
+            measureTime(
+                [](int a[], int n)
+                {
+                    mergeSort(a, n);
+                },
+                data,
+                n
+            );
+
+        double heapTime =
+            measureTime(
+                [](int a[], int n)
+                {
+                    heapSort(a, n);
+                },
+                data,
+                n
+            );
+
+        double compositeTime =
+            measureTime(
+                [](int a[], int n)
+                {
+                    compositeSort(a, n);
+                },
+                data,
+                n
+            );
+
+        cout << n << "\t"
+             << insertionTime << "\t"
+             << quickTime << "\t"
+             << mergeTime << "\t"
+             << heapTime << "\t"
+             << compositeTime << endl;
+
+        delete[] data;
+    }
 
     return 0;
 }
@@ -264,26 +326,26 @@ int main() {
 
 |      排序方法      |    最佳情況    |    平均情況    |    最差情況    |
 | :------------: | :--------: | :--------: | :--------: |
-|   Bubble Sort  |    O(n²)    |    O(n²)   |    O(n²)   |
-| Selection Sort |    O(n²)   |    O(n²)   |    O(n²)   |
-| Insertion Sort |    O(n)    |    O(n²)   |    O(n²)   |
-|   Merge Sort   | O(n log n) | O(n log n) | O(n log n) |
-|   Quick Sort   | O(n log n) | O(n log n) |    O(n²)   |
+|   Insertion Sort  |   O(n)    |    O(n²)   |    O(n²)   |
+| Quick Sort  |    O(n log n)  |   O(n log n)  |    O(n²)   |
+| Merge Sort |   O(n log n)   |    O(n log n)   |    O(n log n)   |
+|   Heap Sort   | O(n log n) | O(n log n) | O(n log n) |
+|Composite Sort| 視情況而定| 視情況而定 |    視情況而定   |
 
-從表格可以看出Bubble Sort 跟 Selection Sort 在資料量變大時效率會比較差，而 Merge Sort 跟 Quick Sort 的效率比較好
+從表格可以看出，Insertion Sort 在資料量增加時效率下降最快，而 Quick Sort、Merge Sort 和 Heap Sort 的表現較穩定。
 
 
 2.空間複雜度：
 
 |      排序方法      |   空間複雜度  |
 | :------------: | :------: |
-|   Bubble Sort  |   O(1)   |
-| Selection Sort |   O(1)   |
-| Insertion Sort |   O(1)   |
-|   Merge Sort   |   O(n)   |
-|   Quick Sort   | O(log n) |
+|   Insertion Sort  |   O(1)   |
+| Quick Sort |   O(log n)   |
+| Merge Sort  |   O(n)   |
+|   Heap Sort   |    O(1)   |
+|   Composite Sort |  視使用方式而定 |
   
-Merge Sort 因為需要額外陣列，所以空間使用量會比較大
+Merge Sort 因為需要額外陣列進行合併，所以空間需求較高。
 
 ## 測試與驗證
 
