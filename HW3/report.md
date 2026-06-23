@@ -187,7 +187,7 @@ void heapSort(int a[], int n)
     }
 }
 
-// Composite Sort（混合策略）
+// Composite Sort
 void compositeSort(int a[], int n)
 {
     if(n <= 50)
