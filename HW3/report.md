@@ -42,14 +42,14 @@
 using namespace std;
 using namespace chrono;
 
-// 複製陣列
+
 void copyArray(int from[], int to[], int n)
 {
     for(int i = 0; i < n; i++)
         to[i] = from[i];
 }
 
-// Worst Case Data（遞減）
+// Worst Case Data
 void worstData(int a[], int n)
 {
     for(int i = 0; i < n; i++)
@@ -85,7 +85,7 @@ void medianOfThree(int a[], int low, int high)
     swap(a[mid], a[high]);
 }
 
-// Quick Sort Partition（標準版）
+// Quick Sort Partition
 int partition(int a[], int low, int high)
 {
     medianOfThree(a, low, high);
@@ -196,7 +196,7 @@ void compositeSort(int a[], int n)
         quickSort(a, 0, n - 1);
 }
 
-// 計時（避免優化）
+
 template <typename Func>
 double measureTime(Func sortFunc, int data[], int n)
 {
@@ -253,7 +253,7 @@ int main()
 | Quick Sort  |    O(n log n)  |   O(n log n)  |    O(n²)   |
 | Merge Sort |   O(n log n)   |    O(n log n)   |    O(n log n)   |
 |   Heap Sort   | O(n log n) | O(n log n) | O(n log n) |
-|Composite Sort| 視情況而定| 視情況而定 |    視情況而定   |
+|Composite Sort| 視情況 | 視情況 |    視情況   |
 
 從表格可以看出，Insertion Sort 在資料量增加時效率下降最快，而 Quick Sort、Merge Sort 和 Heap Sort 的表現較穩定。
 
@@ -266,7 +266,7 @@ int main()
 | Quick Sort |   O(log n)   |
 | Merge Sort  |   O(n)   |
 |   Heap Sort   |    O(1)   |
-|   Composite Sort |  視使用方式而定 |
+|   Composite Sort |  視使用方式 |
   
 Merge Sort 因為需要額外陣列進行合併，所以空間需求較高。
 
@@ -274,10 +274,10 @@ Merge Sort 因為需要額外陣列進行合併，所以空間需求較高。
 
 | n | Insertion Sort| Quick Sort | Merge Sort| Heap Sort | Composite Sort |
 |---|----------------:|----------:|---------:|--------:|----------:|
-| 500 |   0.41   | 0.05 | 0.08 |  0.10 | 0.0 |
+| 500 |   0.41   | 0.05 | 0.08 |  0.10 | 0.05 |
 | 1000 | 1.62 | 0.09 | 0.17 | 0.22 | 0.09 |
 | 2000 | 6.48 | 0.20 | 0.38 | 0.50 | 0.20  |
-| 3000 |  14.5 | 0.32 | 0.60 | 0.81 | 0.32 |
+| 3000 |  14.50 | 0.32 | 0.60 | 0.81 | 0.32 |
 | 4000 | 25.90 | 0.45 | 0.84 | 1.12 | 0.45 |
 | 5000  | 40.45  | 0.59 | 1.10 | 1.46 |  0.59 |
 
@@ -295,15 +295,14 @@ g++ Sorting.cpp -std=c++14 -o Sorting
 Sorting.exe
 ```
 
-
-
 ## 結論
 
-- Insertion Sort 在小資料仍可使用，但受 O(n²) 限制影響明顯
-- Quick Sort 在平均情況下表現最佳
-- Merge Sort 穩定但需要額外記憶體
-- Heap Sort 效能穩定但常數較大
-- Composite Sort 可在小資料提升效能
+- Insertion Sort 在資料小的時候還算快，但資料變大後效率下降很明顯
+- Quick Sort 在大部分情況下表現最好
+- Merge Sort 雖然穩定，但需要額外記憶體
+- Heap Sort 表現穩定，但實作與常數成本稍高
+- Composite Sort 透過小資料用插入排序，可以稍微提升整體效率
+  
 ## 申論及開發報告
 
 ### 為什麼選擇這些排序法
@@ -326,25 +325,24 @@ Sorting.exe
 
 ## 正確性說明
 
-1.Bubble Sort 使用相鄰交換方式排序
+1.Insertion Sort 是透過逐步插入方式，把每個元素放到正確位置，最後形成排序結果 
 
-2.Selection Sort 每次找最小值
+2.Quick Sort 使用 Median-of-Three 選 pivot，再透過 partition 分割左右區間並遞迴排序
 
-3.Insertion Sort 將資料插入正確位置
+3.Merge Sort 是用 bottom-up 的方式，不斷合併小區塊，最後完成排序
 
-4.Merge Sort 使用分割與合併方式
+4.Heap Sort 先建立 max heap，再把最大值依序交換到後面完成排序
 
-5.Quick Sort 使用 Pivot 分割資料
-
+5.Composite Sort 會依照資料量決定使用 Insertion Sort 或 Quick Sort，以平衡效能
 ## 缺點
 
-1.Bubble Sort 效率較低
+1. Insertion Sort 在資料變大時效能很差
 
-2.Selection Sort 需要重複比較很多次
+2. Quick Sort 在最差情況下可能退化為 O(n²)
 
-3.Merge Sort 需要額外空間
-
-4.Quick Sort 最差情況下會變慢
+3. Merge Sort 需要額外記憶體空間
+ 
+4. Heap Sort 常數較大，實際速度不一定最快
 
 ## 改進建議
 
@@ -362,24 +360,22 @@ Sorting.exe
 
 |    學號    |  姓名 | 負責內容                                              |
 | :------: | :-: | :------------------------------------------------ |
-| 41343104 | 楊彩榕 | Heap Sort、Composite Sort、Insertion Sort、測試與報告整理 |
-| 41343105 | 蕭婷亓 | Merge Sort、Quick Sort、效能分析與文件檢查                   |
+| 41343104 | 楊彩榕 | Heap Sort、Insertion Sort、測試與報告整理 |
+| 41343105 | 蕭婷亓 | Merge Sort、Quick Sort、Composite Sort、效能分析與文件檢查                   |
 
 ## 分工內容說明
 
 ### 41343104 楊彩榕
 
 1. 實作 Heap Sort
-2. 實作 Composite Sort
-3. 實作 Insertion Sort
-4. 測試程式結果  
-5. 整理報告內容
+2. 實作 Insertion Sort
+3. 測試程式結果  
+4. 整理報告內容
 
 ### 41343105 蕭婷亓
 
 1. 實作 Merge Sort
 2. 實作 Quick Sort
-3. 分析時間複雜度
-4. 整理文件格式
-5. 檢查程式輸出結果
+3. 實作 Composite Sort
+4. 效能分析與文件檢查 
 
