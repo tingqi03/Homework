@@ -18,15 +18,29 @@ Ackermann Function
 ```cpp
 #include <iostream>
 using namespace std;
-int ackermann(int m, int n)
-{ if (m == 0)
-return n + 1; else if (n == 0) return ackermann(m - 1, 1); else return ackermann(m - 1, ackermann(m, n - 1)); } int main() { int m = 3, n = 2; cout << ackermann(m, n) << endl; return 0; }
+
+int ackermann(int m, int n) {
+    if (m == 0)
+        return n + 1;
+    else if (n == 0)
+        return ackermann(m - 1, 1);
+    else
+        return ackermann(m - 1, ackermann(m, n - 1));
+}
+
+int main() {
+    int m = 3, n = 2;
+
+    cout << ackermann(m, n) << endl;
+
+    return 0;
+}
 ```
 ## 效能分析
 
-1. 時間複雜度：每個元素都有選與不選,2的n次方種新集合
+1. 時間複雜度：Ackermann 函數的成長很快，當 m 和 n 變大時，程式需要計算很多次。
 
-2. 空間複雜度：儲存所有子集合需要同樣數量的空間
+2. 空間複雜度：因為使用遞迴，所以會使用到系統的 stack，遞迴次數越多，需要的空間也越多。
 
 ## 測試與驗證
 ### 測試案例
