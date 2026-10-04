@@ -9,11 +9,11 @@ Ackermann Function
 這題是要用遞迴的方式來計算Ackermann函數A(m,n)的結果
 ### 解題策略
 1. 根據Ackermann 函數的數學定義分三種情況:
-   - 當 m = 0 時，回傳 n + 1。
-   - 當 m > 0且 n = 0 時，呼叫 A(m - 1, 1)。
+   - 當 m = 0 時，回傳 n + 1
+   - 當 m > 0且 n = 0 時，呼叫 A(m - 1, 1)
    - 否則，先呼叫 A(m, n - 1)，再將結果作為 A(m - 1, 結果)的第二個參數遞迴呼叫
 2. 透過 if-else 條件式分支實作上述邏輯，讓程式能根據參數值進行正確的遞迴路徑
-3. 當 m = 0 時，可以直接得到結果，因此該次遞迴停止並回傳，之後再逐層回傳結果。
+3. 當 m = 0 時，可以直接得到結果，因此該次遞迴停止並回傳，之後再逐層回傳結果
 ```cpp
 #include <iostream>
 using namespace std;
@@ -202,11 +202,11 @@ void printSubsets(string set[], string currentSet[], int size, int index, int cu
         return;
     }
 
-    // 選擇目前的元素
+    
     currentSet[currentSize] = set[index];
     printSubsets(set, currentSet, size, index + 1, currentSize + 1);
 
-    // 不選擇目前的元素
+    
     printSubsets(set, currentSet, size, index + 1, currentSize);
 }
 
@@ -240,9 +240,9 @@ int main() {
 | 測試案例 | 輸入參數 S | 預期輸出 | 實際輸出 |
 |----------|--------------|----------|----------|
 | 測試一   | {}      | {}       | 正確  |
-| 測試二   | {a}     | {},(a)}   |正確 |
-| 測試三   | {a,b}   | {},(a),(b),(a,b)} | 正確 |
-| 測試四   | {a,b,c} | {},(a),(b),(c),(a,b),(a,c),(b,c),(a,b,c)} | 正確 |
+| 測試二   | {a}     | {},{a}   |正確 |
+| 測試三   | {a,b}   | {},{a},{b},{a,b} | 正確 |
+| 測試四   | {a,b,c} | {},{a},{b},{c}, {a,b} ,{a,c},{b,c},{a,b,c} | 正確 |
 
 ### 編譯與執行指令
 
@@ -254,8 +254,9 @@ g++ -std=c++17 -o powerset powerset.cpp
 
 ### 結論
 
-利用S的冪集合分解了問題與結構的思想。
-
+1. 這次使用遞迴的方式來產生 Powerset。
+2. 每個元素都有選擇和不選擇兩種情況，所以可以利用遞迴找出所有可能的子集合。
+   
 ## 申論及開發報告
 
 這次 Powerset 使用遞迴的方式來完成，主要是因為每個元素都有「選擇」和「不選擇」兩種情況，所以很適合使用遞迴來處理。
