@@ -13,8 +13,7 @@ Ackermann Function
    - 當 m > 0且 n = 0 時，呼叫 A(m - 1, 1)。
    - 否則，先呼叫 A(m, n - 1)，再將結果作為 A(m - 1, 結果)的第二個參數遞迴呼叫
 2. 透過 if-else 條件式分支實作上述邏輯，讓程式能根據參數值進行正確的遞迴路徑
-3. 終止條件為 m = 0，此時遞迴停止並開始回傳值，逐層往上收斂結果
-## 程式實作
+3. 當 m = 0 時，可以直接得到結果，因此該次遞迴停止並回傳，之後再逐層回傳結果。
 ```cpp
 #include <iostream>
 using namespace std;
@@ -38,7 +37,7 @@ int main() {
 ```
 ## 效能分析
 
-1. 時間複雜度：Ackermann 函數的成長很快，當 m 和 n 變大時，程式需要計算很多次。
+1. 時間複雜度：Ackermann 函數的成長速度非常快，當 m 和 n 增加時，需要進行的遞迴次數也會快速增加，因此計算時間會變長。
 
 2. 空間複雜度：因為使用遞迴，所以會使用到系統的 stack，遞迴次數越多，需要的空間也越多。
 
@@ -123,7 +122,7 @@ int ackermann_iterative(int m, int n) {
 
 int main() {
     int m = 3, n = 2;
-    cout << ackermann_iterative(m, n) << '\n';
+    cout << ackermann_iterative(m, n) << endl;
 }
 ```
 
@@ -190,46 +189,49 @@ Powerset
 
 using namespace std;
 
-
-void printSubsets(const vector<string>& set, vector<string>& currentSet, int index) {
+void printSubsets(string set[], string currentSet[], int size, int index, int currentSize) {
     
-    if (index == set.size()) {
+    if (index == size) {
         cout << "{ ";
-        for (const auto& element : currentSet) {
-            cout << element << " ";
+        
+        for (int i = 0; i < currentSize; i++) {
+            cout << currentSet[i] << " ";
         }
+        
         cout << "}" << endl;
         return;
     }
 
-    
-    currentSet.push_back(set[index]);
-    printSubsets(set, currentSet, index + 1);
+    // 選擇目前的元素
+    currentSet[currentSize] = set[index];
+    printSubsets(set, currentSet, size, index + 1, currentSize + 1);
 
-    
-    currentSet.pop_back();
-    printSubsets(set, currentSet, index + 1);
+    // 不選擇目前的元素
+    printSubsets(set, currentSet, size, index + 1, currentSize);
 }
 
-
-void computePowerset(const vector<string>& set) {
-    vector<string> currentSet; // Temporary vector to store current subset
-    printSubsets(set, currentSet, 0);
+void computePowerset(string set[], int size) {
+    string currentSet[100];
+    
+    printSubsets(set, currentSet, size, 0, 0);
 }
 
 int main() {
-    vector<string> set = {"a", "b", "c"};  // Set S = {a, b, c}
-    
+    string set[] = {"a", "b", "c"};
+    int size = 3;
+
     cout << "Powerset of {a, b, c} is:" << endl;
-    computePowerset(set);  
+
+    computePowerset(set, size);
+
     return 0;
 }
 ```
 
 ## 效能分析
 
-1. 時間複雜度：每個元素選與不選,因此共有2的n次方種子集合。
-2. 空間複雜度：儲存所有子集合的時間。
+1. 時間複雜度：每個元素都有選擇和不選擇兩種情況，所以共有 2^n 個子集合。每個子集合最多需要處理 n 個元素，因此時間複雜度約為 O(n × 2^n)。
+2. 空間複雜度：程式使用陣列暫存目前正在處理的子集合，最多存放 n 個元素，因此額外空間複雜度為 O(n)。
 
 ## 測試與驗證
 
@@ -237,10 +239,10 @@ int main() {
 
 | 測試案例 | 輸入參數 S | 預期輸出 | 實際輸出 |
 |----------|--------------|----------|----------|
-| 測試一   | {}      | {0}       | {0}  |
-| 測試二   | {a}     | {0,(a)}   |{0,(a)} |
-| 測試三   | {a,b}   | {0,(a),(b),(a,b)} | 正確 |
-| 測試四   | {a,b,c} | {0,(a),(b),(c),(a,b),(a,c),(b,c),(a,b,c)} | 正確 |
+| 測試一   | {}      | {}       | 正確  |
+| 測試二   | {a}     | {},(a)}   |正確 |
+| 測試三   | {a,b}   | {},(a),(b),(a,b)} | 正確 |
+| 測試四   | {a,b,c} | {},(a),(b),(c),(a,b),(a,c),(b,c),(a,b,c)} | 正確 |
 
 ### 編譯與執行指令
 
