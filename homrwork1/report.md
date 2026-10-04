@@ -55,7 +55,7 @@ int main() {
 ### 編譯與執行指令
 
 $ g++ -std=c++17 -o ackermann ackermann.cpp 
-./ackermann
+$./ackermann
 
 
 ## 結論
