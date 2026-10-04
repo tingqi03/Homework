@@ -1,39 +1,40 @@
 #include <iostream>
-#include <stack>
+#include <string>
+
 using namespace std;
 
-int ackermann_non_recursive(int m, int n) {
-    stack<pair<int, int>> call_stack;
-
-    while (true) {
-        if (m == 0) {
-            n = n + 1;
-            if (call_stack.empty()) break;
-            m = call_stack.top().first;
-            n = call_stack.top().second;
-            call_stack.pop();
+void printSubsets(string set[], string currentSet[], int size, int index, int currentSize) {
+    
+    if (index == size) {
+        cout << "{ ";
+        
+        for (int i = 0; i < currentSize; i++) {
+            cout << currentSet[i] << " ";
         }
-        else if (n == 0) {
-            call_stack.push({m - 1, 1});
-            m = m - 1;
-            n = 1;
-        }
-        else {
-            call_stack.push({m - 1, n - 1});
-            m = m - 1;
-            n = n - 1;
-        }
+        
+        cout << "}" << endl;
+        return;
     }
 
-    return n;
+    currentSet[currentSize] = set[index];
+    printSubsets(set, currentSet, size, index + 1, currentSize + 1);
+
+    printSubsets(set, currentSet, size, index + 1, currentSize);
+}
+
+void computePowerset(string set[], int size) {
+    string currentSet[100];
+    
+    printSubsets(set, currentSet, size, 0, 0);
 }
 
 int main() {
-    int m, n;
-    cout << "Enter values for m and n: ";
-    cin >> m >> n;
-    
-    cout << "Ackermann(" << m << ", " << n << ") = " << ackermann_non_recursive(m, n) << endl;
-    
+    string set[] = {"a", "b", "c"};
+    int size = 3;
+
+    cout << "Powerset of {a, b, c} is:" << endl;
+
+    computePowerset(set, size);
+
     return 0;
 }
